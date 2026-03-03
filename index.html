@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Records Table</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Record Form</h2>
+<form id="recordForm">
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="middleName" placeholder="Middle Name">
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="number" id="age" placeholder="Age" required>
+    <br>
+    <button type="button" id="insertBtn">Insert</button>
+    <button type="button" id="updateBtn" style="display:none;">Update</button>
+    <button type="button" id="clearBtn">Clear Form</button>
+    <button type="button" id="clearRecordsBtn">Clear All Records</button>
+</form>
+
+<h3>Records Table</h3>
+<table id="recordsTable">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Middle Name</th>
+            <th>Last Name</th>
+            <th>Age</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dynamic records will appear here -->
+    </tbody>
+</table>
+
+<script src="main.js"></script>
+</body>
+</html>
