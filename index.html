@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Web Output #2</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .input-group { margin-bottom: 10px; }
+        .input-group label { display: inline-block; width: 100px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .controls { margin-top: 20px; display: flex; gap: 10px; align-items: center; }
+        .no-records { color: red; text-align: center; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+    <h1>JavaScript Web Output #2</h1>
+
+    <div id="form-container">
+        <div class="input-group">
+            <label>First Name:</label> <input type="text" id="fname">
+        </div>
+        <div class="input-group">
+            <label>Middle Name:</label> <input type="text" id="mname">
+        </div>
+        <div class="input-group">
+            <label>Last Name:</label> <input type="text" id="lname">
+        </div>
+        <div class="input-group">
+            <label>Age:</label> <input type="number" id="age">
+        </div>
+        <button onclick="addRecord()">Insert</button>
+        <button onclick="clearInputs()">Clear</button>
+    </div>
+
+    <hr>
+
+    <fieldset>
+        <legend>Records</legend>
+        <div id="table-wrapper">
+            <table id="recordTable">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Middle Name</th>
+                        <th>Last Name</th>
+                        <th>Age</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="recordBody"></tbody>
+            </table>
+            <div id="emptyMsg" class="no-records" style="display:none;">- No Records...</div>
+        </div>
+    </fieldset>
+
+    <div class="controls">
+        <button onclick="clearAllRecords()">Clear Records</button>
+        <label>Sort by:</label>
+        <select id="sortSelect" onchange="renderTable()">
+            <option value="lname">Last Name</option>
+            <option value="fname">First Name</option>
+            <option value="age">Age</option>
+        </select>
+        <button onclick="toggleSortOrder()" id="orderBtn">A-Z</button>
+        <button onclick="saveToStorage()">Save to Local Storage</button>
+    </div>
+
+    <script>
+        let records = JSON.parse(localStorage.getItem('userRecords')) || [];
+        let isAscending = true;
+
+        function addRecord() {
+            const record = {
+                fname: document.getElementById('fname').value,
+                mname: document.getElementById('mname').value,
+                lname: document.getElementById('lname').value,
+                age: parseInt(document.getElementById('age').value) || 0
+            };
+            if(record.fname && record.lname) {
+                records.push(record);
+                clearInputs();
+                renderTable();
+            }
+        }
+
+        function clearInputs() {
+            ['fname', 'mname', 'lname', 'age'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function deleteRecord(index) {
+            records.splice(index, 1);
+            renderTable();
+        }
+
+        function clearAllRecords() {
+            records = [];
+            localStorage.removeItem('userRecords');
+            renderTable();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('userRecords', JSON.stringify(records));
+            alert("Data saved to Local Storage!");
+        }
+
+        function toggleSortOrder() {
+            isAscending = !isAscending;
+            document.getElementById('orderBtn').innerText = isAscending ? "A-Z" : "Z-A";
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('recordBody');
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            // Sorting Logic
+            records.sort((a, b) => {
+                let valA = a[sortBy].toString().toLowerCase();
+                let valB = b[sortBy].toString().toLowerCase();
+                if (isAscending) return valA > valB ? 1 : -1;
+                return valA < valB ? 1 : -1;
+            });
+
+            tbody.innerHTML = '';
+            if (records.length === 0) {
+                document.getElementById('recordTable').style.display = 'none';
+                document.getElementById('emptyMsg').style.display = 'block';
+            } else {
+                document.getElementById('recordTable').style.display = 'table';
+                document.getElementById('emptyMsg').style.display = 'none';
+                records.forEach((rec, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${rec.fname}</td>
+                            <td>${rec.mname}</td>
+                            <td>${rec.lname}</td>
+                            <td>${rec.age}</td>
+                            <td>
+                                <button onclick="deleteRecord(${index})">Delete</button>
+                                <button>Edit</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+        }
+
+        // Initial Load
+        renderTable();
+    </script>
+</body>
+</html>
